@@ -16,7 +16,7 @@
             DockPanel.Dock="Bottom"
             HorizontalAlignment="Center" 
             Command="{Binding BuyMusicCommand}"/>
-    <ListBox Items="{Binding SearchResults}" SelectedItem="{Binding SelectedAlbum}"
+    <ListBox ItemsSource="{Binding SearchResults}" SelectedItem="{Binding SelectedAlbum}"
              Background="Transparent" Margin="0 20">
       <ListBox.ItemsPanel>
         <ItemsPanelTemplate>
