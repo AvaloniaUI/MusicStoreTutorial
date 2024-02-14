@@ -11,6 +11,9 @@ namespace Avalonia.MusicStore.Views
         public MainWindow()
         {
             InitializeComponent();
+            
+            if (Design.IsDesignMode) return;
+            
             this.WhenActivated(action =>
                 action(ViewModel!.ShowDialog.RegisterHandler(DoShowDialogAsync)));
         }

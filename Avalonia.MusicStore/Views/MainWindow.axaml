@@ -11,7 +11,8 @@
         TransparencyLevelHint="AcrylicBlur"
         Background="Transparent"
         ExtendClientAreaToDecorationsHint="True"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        x:DataType="vm:MainWindowViewModel">
 
   <Panel>
     <ExperimentalAcrylicBorder IsHitTestVisible="False">
@@ -29,7 +30,7 @@
             <PathIcon Data="{StaticResource store_microsoft_regular}" />
       </Button>
     
-    <ItemsControl Margin="0 40 0 0" Items="{Binding Albums}">
+    <ItemsControl Margin="0 40 0 0" ItemsSource="{Binding Albums}">
       <ItemsControl.ItemsPanel>
         <ItemsPanelTemplate>
           <WrapPanel />
