@@ -58,7 +58,7 @@ namespace Avalonia.MusicStore.Models
                 Directory.CreateDirectory("./Cache");
             }
 
-            using (var fs = File.OpenWrite(CachePath))
+            using (var fs = File.OpenWrite(CachePath + ".json"))
             {
                 await SaveToStreamAsync(this, fs);
             }
@@ -90,7 +90,7 @@ namespace Avalonia.MusicStore.Models
 
             foreach (var file in Directory.EnumerateFiles("./Cache"))
             {
-                if (!string.IsNullOrWhiteSpace(new DirectoryInfo(file).Extension)) continue;
+                if ((new DirectoryInfo(file).Extension) != ".json") continue;
 
                 await using var fs = File.OpenRead(file);
                 results.Add(await Album.LoadFromStream(fs).ConfigureAwait(false));
