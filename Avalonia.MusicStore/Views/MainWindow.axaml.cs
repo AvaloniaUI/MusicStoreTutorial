@@ -18,7 +18,7 @@ namespace Avalonia.MusicStore.Views
                 action(ViewModel!.ShowDialog.RegisterHandler(DoShowDialogAsync)));
         }
 
-        private async Task DoShowDialogAsync(InteractionContext<MusicStoreViewModel,
+        private async Task DoShowDialogAsync(IInteractionContext<MusicStoreViewModel,
                                                 AlbumViewModel?> interaction)
         {
             var dialog = new MusicStoreWindow();
