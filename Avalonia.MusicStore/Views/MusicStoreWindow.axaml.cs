@@ -1,16 +1,24 @@
-using Avalonia.MusicStore.ViewModels;
-using Avalonia.ReactiveUI;
-using ReactiveUI;
 using System;
+using Avalonia.Controls;
+using Avalonia.MusicStore.ViewModels;
 
 namespace Avalonia.MusicStore.Views
 {
-    public partial class MusicStoreWindow : ReactiveWindow<MusicStoreViewModel>
+    public partial class MusicStoreWindow : Window
     {
         public MusicStoreWindow()
         {
             InitializeComponent();
-            this.WhenActivated(action => action(ViewModel!.BuyMusicCommand.Subscribe(Close)));
+        }
+
+        protected override void OnDataContextChanged(EventArgs e)
+        {
+            base.OnDataContextChanged(e);
+
+            if (DataContext is MusicStoreViewModel vm)
+            {
+                vm.AlbumPurchased += (album) => { Close(album); };
+            }
         }
     }
 }

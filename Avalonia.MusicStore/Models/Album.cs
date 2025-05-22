@@ -36,7 +36,18 @@ namespace Avalonia.MusicStore.Models
         }
 
         private static HttpClient s_httpClient = new();
-        private string CachePath => $"./Cache/{Artist} - {Title}";
+        private string CachePath => $"./Cache/{SanitizeFileName(Artist)} - {SanitizeFileName(Title)}";
+
+        private static string SanitizeFileName(string input)
+        {
+            foreach (var c in Path.GetInvalidFileNameChars())
+            {
+                input = input.Replace(c, '_');
+            }
+
+            return input;
+        }
+
 
         public async Task<Stream> LoadCoverBitmapAsync()
         {
@@ -100,4 +111,3 @@ namespace Avalonia.MusicStore.Models
         }
     }
 }
-

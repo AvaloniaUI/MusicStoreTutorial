@@ -26,23 +26,26 @@
     </ExperimentalAcrylicBorder>
     <Panel Margin="40">
       <Button HorizontalAlignment="Right" VerticalAlignment="Top"
-        Command="{Binding BuyMusicCommand}">
+        Command="{Binding AddAlbumCommand}">
             <PathIcon Data="{StaticResource store_microsoft_regular}" />
       </Button>
     
-    <ItemsControl Margin="0 40 0 0" ItemsSource="{Binding Albums}">
-      <ItemsControl.ItemsPanel>
-        <ItemsPanelTemplate>
-          <WrapPanel />
-        </ItemsPanelTemplate>
-      </ItemsControl.ItemsPanel>
+      <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0 40 0 0">
+        <ItemsControl ItemsSource="{Binding Albums}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <WrapPanel />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
 
-      <ItemsControl.ItemTemplate>
-        <DataTemplate>
-          <views:AlbumView Margin="0 0 20 20" />
-        </DataTemplate>
-      </ItemsControl.ItemTemplate>
-    </ItemsControl>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <views:AlbumView Margin="0 0 20 20" />
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
+
   </Panel>
   </Panel>
   

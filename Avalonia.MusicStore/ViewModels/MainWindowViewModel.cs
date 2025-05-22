@@ -1,39 +1,39 @@
 ﻿using Avalonia.MusicStore.Models;
-using ReactiveUI;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive.Linq;
-using System.Windows.Input;
-using System.Reactive.Concurrency;
+using System.Threading.Tasks;
 
 namespace Avalonia.MusicStore.ViewModels
 {
-    public class MainWindowViewModel : ViewModelBase
+    public partial class MainWindowViewModel : ObservableObject
     {
-        public Interaction<MusicStoreViewModel, AlbumViewModel?> ShowDialog { get; }
+        public ObservableCollection<AlbumViewModel> Albums { get; } = new();
 
-        public ICommand BuyMusicCommand { get; }
+        public Func<MusicStoreViewModel, Task<AlbumViewModel?>>? OnShowDialog { get; set; }
 
         public MainWindowViewModel()
         {
-            RxApp.MainThreadScheduler.Schedule(LoadAlbums);
+            Task.Run(LoadAlbums);
+        }
 
-            ShowDialog = new Interaction<MusicStoreViewModel, AlbumViewModel?>();
+        [RelayCommand]
+        private async Task AddAlbumAsync()
+        {
+            var store = new MusicStoreViewModel();
 
-            BuyMusicCommand = ReactiveCommand.CreateFromTask(async () =>
+            if (OnShowDialog is not null)
             {
-                var store = new MusicStoreViewModel();
-
-                var result = await ShowDialog.Handle(store);
+                var result = await OnShowDialog(store);
                 if (result != null)
                 {
                     Albums.Add(result);
                     await result.SaveToDiskAsync();
                 }
-            });
+            }
         }
-
-        public ObservableCollection<AlbumViewModel> Albums { get; } = new();
 
         private async void LoadAlbums()
         {
