@@ -18,7 +18,7 @@ namespace Avalonia.MusicStore.ViewModels
 
         public string Title => _album.Title;
 
-        [ObservableProperty] private Bitmap? cover;
+        [ObservableProperty] public partial Bitmap? Cover { get; private set; }
 
         public async Task LoadCover()
         {

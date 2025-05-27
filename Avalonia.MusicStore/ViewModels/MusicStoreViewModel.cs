@@ -15,11 +15,11 @@ namespace Avalonia.MusicStore.ViewModels
         private CancellationTokenSource? _searchDebounceCts;
         public event Action<AlbumViewModel>? AlbumPurchased;
 
-        [ObservableProperty] private string? searchText;
-
-        [ObservableProperty] private bool isBusy;
-
-        [ObservableProperty] private AlbumViewModel? selectedAlbum;
+        [ObservableProperty] public partial string? SearchText { get; set; }
+        
+        [ObservableProperty] public partial bool IsBusy { get; private set; }
+        
+        [ObservableProperty] public partial AlbumViewModel? SelectedAlbum { get; set; }
 
         public ObservableCollection<AlbumViewModel> SearchResults { get; } = new();
 
