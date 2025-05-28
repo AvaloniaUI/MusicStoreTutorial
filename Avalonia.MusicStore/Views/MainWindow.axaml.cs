@@ -1,6 +1,7 @@
-using Avalonia;
 using Avalonia.Controls;
+using Avalonia.MusicStore.Messages;
 using Avalonia.MusicStore.ViewModels;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace Avalonia.MusicStore.Views
 {
@@ -12,21 +13,15 @@ namespace Avalonia.MusicStore.Views
 
             if (Design.IsDesignMode) return;
 
-            this.Opened += (_, _) =>
+            WeakReferenceMessenger.Default.Register<MainWindow, PurchaseAlbumMessage>(this, static (w, m) =>
             {
-                if (DataContext is MainWindowViewModel vm)
+                var dialog = new MusicStoreWindow
                 {
-                    vm.OnShowDialog = async (musicStoreVm) =>
-                    {
-                        var dialog = new MusicStoreWindow
-                        {
-                            DataContext = musicStoreVm
-                        };
+                    DataContext = new MusicStoreViewModel()
+                };
 
-                        return await dialog.ShowDialog<AlbumViewModel?>(this);
-                    };
-                }
-            };
+                m.Reply(dialog.ShowDialog<AlbumViewModel?>(w));
+            });
         }
     }
 }

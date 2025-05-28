@@ -1,6 +1,6 @@
-using System;
 using Avalonia.Controls;
-using Avalonia.MusicStore.ViewModels;
+using Avalonia.MusicStore.Messages;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace Avalonia.MusicStore.Views
 {
@@ -9,16 +9,9 @@ namespace Avalonia.MusicStore.Views
         public MusicStoreWindow()
         {
             InitializeComponent();
-        }
 
-        protected override void OnDataContextChanged(EventArgs e)
-        {
-            base.OnDataContextChanged(e);
-
-            if (DataContext is MusicStoreViewModel vm)
-            {
-                vm.AlbumPurchased += (album) => { Close(album); };
-            }
+            WeakReferenceMessenger.Default.Register<MusicStoreWindow, MusicStoreClosedMessage>(this,
+                static (w, m) => w.Close(m.SelectedAlbum));
         }
     }
 }

@@ -4,8 +4,10 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.MusicStore.Messages;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace Avalonia.MusicStore.ViewModels
 {
@@ -13,7 +15,6 @@ namespace Avalonia.MusicStore.ViewModels
     {
         private CancellationTokenSource? _cancellationTokenSource;
         private CancellationTokenSource? _searchDebounceCts;
-        public event Action<AlbumViewModel>? AlbumPurchased;
 
         [ObservableProperty] public partial string? SearchText { get; set; }
         
@@ -98,7 +99,7 @@ namespace Avalonia.MusicStore.ViewModels
         {
             if (SelectedAlbum != null)
             {
-                AlbumPurchased?.Invoke(SelectedAlbum);
+                WeakReferenceMessenger.Default.Send(new MusicStoreClosedMessage(SelectedAlbum));
             }
         }
     }
