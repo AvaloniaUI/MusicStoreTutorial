@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.MusicStore.Messages;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Messaging;
 
 namespace Avalonia.MusicStore.ViewModels
@@ -31,17 +32,20 @@ namespace Avalonia.MusicStore.ViewModels
 
         private async void LoadAlbums()
         {
-            var albums = (await Album.LoadCachedAsync()).Select(x => new AlbumViewModel(x));
+            var albums = (await Album.LoadCachedAsync()).Select(x => new AlbumViewModel(x)).ToList();
 
-            foreach (var album in albums)
-            {
-                Albums.Add(album);
-            }
 
-            foreach (var album in Albums.ToList())
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                await album.LoadCover();
-            }
+                Albums.Clear();
+    
+                foreach (var album in albums)
+                {
+                    Albums.Add(album);
+                }
+            });
+            var coverTasks = albums.Select(album => album.LoadCover());
+            await Task.WhenAll(coverTasks);
         }
     }
 }
