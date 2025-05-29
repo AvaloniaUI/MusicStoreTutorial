@@ -26,13 +26,11 @@ namespace Avalonia.MusicStore.ViewModels
 
         public MusicStoreViewModel()
         {
-            PropertyChanged += async (s, e) =>
-            {
-                if (e.PropertyName == nameof(SearchText)) 
-                {
-                    DoSearch(SearchText);
-                }
-            };
+     
+        }
+        partial void OnSearchTextChanged(string value)
+        {
+            DoSearch(SearchText);
         }
         
         private async Task DoSearch(string? term)
