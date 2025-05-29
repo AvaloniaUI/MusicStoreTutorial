@@ -29,33 +29,14 @@ namespace Avalonia.MusicStore.ViewModels
         {
             PropertyChanged += async (s, e) =>
             {
-                if (e.PropertyName == nameof(SearchText))
+                if (e.PropertyName == nameof(SearchText)) 
                 {
-                    await SearchWithDelayAsync(SearchText);
+                    DoSearch(SearchText);
                 }
             };
         }
-
-        private async Task SearchWithDelayAsync(string? term)
-        {
-            _searchDebounceCts?.Cancel();
-            _searchDebounceCts = new CancellationTokenSource();
-            var token = _searchDebounceCts.Token;
-
-            try
-            {
-                await Task.Delay(400, token);
-                if (!token.IsCancellationRequested && !string.IsNullOrWhiteSpace(term))
-                {
-                    DoSearch(term);
-                }
-            }
-            catch (TaskCanceledException)
-            {
-            }
-        }
-
-        private async Task DoSearch(string term)
+        
+        private async Task DoSearch(string? term)
         {
             _cancellationTokenSource?.Cancel();
             _cancellationTokenSource = new CancellationTokenSource();

@@ -13,19 +13,20 @@ namespace Avalonia.MusicStore.Models
     public class Album
     {
         private static iTunesSearchManager s_SearchManager = new();
-
-        public string Artist { get; set; }
-        public string Title { get; set; }
-        public string CoverUrl { get; set; }
-
+        private static HttpClient s_httpClient = new();
+        
         public Album(string artist, string title, string coverUrl)
         {
             Artist = artist;
             Title = title;
             CoverUrl = coverUrl;
         }
+        public string Artist { get; set; }
+        public string Title { get; set; }
+        public string CoverUrl { get; set; }
+        private string CachePath => $"./Cache/{SanitizeFileName(Artist)} - {SanitizeFileName(Title)}";
 
-        public static async Task<IEnumerable<Album>> SearchAsync(string searchTerm)
+        public static async Task<IEnumerable<Album>> SearchAsync(string? searchTerm)
         {
             var query = await s_SearchManager.GetAlbumsAsync(searchTerm)
                 .ConfigureAwait(false);
@@ -34,9 +35,6 @@ namespace Avalonia.MusicStore.Models
                 new Album(x.ArtistName, x.CollectionName,
                     x.ArtworkUrl100.Replace("100x100bb", "600x600bb")));
         }
-
-        private static HttpClient s_httpClient = new();
-        private string CachePath => $"./Cache/{SanitizeFileName(Artist)} - {SanitizeFileName(Title)}";
 
         private static string SanitizeFileName(string input)
         {
@@ -47,8 +45,7 @@ namespace Avalonia.MusicStore.Models
 
             return input;
         }
-
-
+        
         public async Task<Stream> LoadCoverBitmapAsync()
         {
             if (File.Exists(CachePath + ".bmp"))
