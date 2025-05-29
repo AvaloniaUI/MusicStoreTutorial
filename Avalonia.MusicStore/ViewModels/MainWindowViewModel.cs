@@ -1,10 +1,10 @@
-﻿using Avalonia.MusicStore.Models;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.MusicStore.Messages;
+using Avalonia.MusicStore.Models;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 
 namespace Avalonia.MusicStore.ViewModels
@@ -15,9 +15,9 @@ namespace Avalonia.MusicStore.ViewModels
 
         public MainWindowViewModel()
         {
-             LoadAlbums();
+            LoadAlbums();
         }
-        
+
         /// <summary>
         /// This relay command send a message to initiate album purchase, adds the result to the collection and saves it to disk.
         /// </summary>

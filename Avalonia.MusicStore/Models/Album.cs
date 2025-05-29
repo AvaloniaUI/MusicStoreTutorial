@@ -1,10 +1,10 @@
-﻿using iTunesSearch.Library;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
+using iTunesSearch.Library;
 
 namespace Avalonia.MusicStore.Models
 {
@@ -12,19 +12,19 @@ namespace Avalonia.MusicStore.Models
     {
         private static iTunesSearchManager s_SearchManager = new();
         private static HttpClient s_httpClient = new();
-        
+
         public Album(string artist, string title, string coverUrl)
         {
             Artist = artist;
             Title = title;
             CoverUrl = coverUrl;
         }
-        
+
         public string Artist { get; set; }
         public string Title { get; set; }
         public string CoverUrl { get; set; }
         private string CachePath => $"./Cache/{SanitizeFileName(Artist)} - {SanitizeFileName(Title)}";
-        
+
         /// <summary>
         /// Searches in iTunes api for albums matching the given search term.
         /// </summary>
@@ -36,7 +36,7 @@ namespace Avalonia.MusicStore.Models
                 new Album(x.ArtistName, x.CollectionName,
                     x.ArtworkUrl100.Replace("100x100bb", "600x600bb")));
         }
-        
+
         /// <summary>
         /// Loads an album from the given stream.
         /// </summary>
@@ -44,7 +44,7 @@ namespace Avalonia.MusicStore.Models
         {
             return (await JsonSerializer.DeserializeAsync<Album>(stream).ConfigureAwait(false))!;
         }
-        
+
         /// <summary>
         /// Loads all cached albums from /Cache directory.
         /// </summary>
@@ -59,7 +59,8 @@ namespace Avalonia.MusicStore.Models
 
             foreach (var file in Directory.EnumerateFiles("./Cache"))
             {
-                if ((new DirectoryInfo(file).Extension) != ".json") continue;
+                if ((new DirectoryInfo(file).Extension) != ".json")
+                    continue;
 
                 await using var fs = File.OpenRead(file);
                 results.Add(await Album.LoadFromStream(fs).ConfigureAwait(false));
@@ -67,7 +68,7 @@ namespace Avalonia.MusicStore.Models
 
             return results;
         }
-        
+
         /// <summary>
         /// Loads the album cover bitmap from cache or api.
         /// </summary>
@@ -107,7 +108,7 @@ namespace Avalonia.MusicStore.Models
         {
             return File.OpenWrite(CachePath + ".bmp");
         }
-        
+
         /// <summary>
         /// Sanitizes invalid characters from the input and returns valid characters for a file name.
         /// Example: AC/DC -> AC_DC

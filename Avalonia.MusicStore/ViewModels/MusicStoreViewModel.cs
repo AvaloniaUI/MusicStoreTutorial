@@ -1,10 +1,10 @@
-﻿using Avalonia.MusicStore.Models;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.MusicStore.Messages;
+using Avalonia.MusicStore.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -15,13 +15,13 @@ namespace Avalonia.MusicStore.ViewModels
     {
         private CancellationTokenSource? _cancellationTokenSource;
 
-        [ObservableProperty] 
+        [ObservableProperty]
         public partial string? SearchText { get; set; }
 
-        [ObservableProperty] 
+        [ObservableProperty]
         public partial bool IsBusy { get; private set; }
 
-        [ObservableProperty] 
+        [ObservableProperty]
         public partial AlbumViewModel? SelectedAlbum { get; set; }
 
         public ObservableCollection<AlbumViewModel> SearchResults { get; } = new();
@@ -37,7 +37,7 @@ namespace Avalonia.MusicStore.ViewModels
                 WeakReferenceMessenger.Default.Send(new MusicStoreClosedMessage(SelectedAlbum));
             }
         }
-        
+
         /// <summary>
         /// Performs an asynchronous search for albums based on the provided term and updates the results.
         /// </summary>
@@ -65,7 +65,7 @@ namespace Avalonia.MusicStore.ViewModels
 
             IsBusy = false;
         }
-        
+
         /// <summary>
         /// Asynchronously loads album cover images for each result, unless the operation is canceled.
         /// </summary>
@@ -81,13 +81,13 @@ namespace Avalonia.MusicStore.ViewModels
                 }
             }
         }
-        
+
         /// <summary>
         /// Triggered when the search text in music store view changes and initiates a new search operation.
         /// </summary>
         partial void OnSearchTextChanged(string value)
         {
-            DoSearch(SearchText);
+            _ = DoSearch(SearchText);
         }
     }
 }

@@ -11,7 +11,8 @@ namespace Avalonia.MusicStore.Views
         {
             InitializeComponent();
 
-            if (Design.IsDesignMode) return;
+            if (Design.IsDesignMode)
+                return;
 
             WeakReferenceMessenger.Default.Register<MainWindow, PurchaseAlbumMessage>(this, static (w, m) =>
             {
