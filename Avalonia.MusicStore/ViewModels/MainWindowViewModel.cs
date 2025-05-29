@@ -17,7 +17,10 @@ namespace Avalonia.MusicStore.ViewModels
         {
              LoadAlbums();
         }
-
+        
+        /// <summary>
+        /// This relay command send a message to initiate album purchase, adds the result to the collection and saves it to disk.
+        /// </summary>
         [RelayCommand]
         private async Task AddAlbumAsync()
         {
@@ -29,6 +32,9 @@ namespace Avalonia.MusicStore.ViewModels
             }
         }
 
+        /// <summary>
+        /// Loads albums and their covers from cache.
+        /// </summary>
         private async void LoadAlbums()
         {
             var albums = (await Album.LoadCachedAsync()).Select(x => new AlbumViewModel(x)).ToList();

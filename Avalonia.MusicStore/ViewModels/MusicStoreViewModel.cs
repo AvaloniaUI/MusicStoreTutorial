@@ -26,6 +26,9 @@ namespace Avalonia.MusicStore.ViewModels
 
         public ObservableCollection<AlbumViewModel> SearchResults { get; } = new();
 
+        /// <summary>
+        /// This relay command sends a message indicating that the selected album has been purchased, which will notify music store view to close.
+        /// </summary>
         [RelayCommand]
         private void BuyMusic()
         {
@@ -34,7 +37,10 @@ namespace Avalonia.MusicStore.ViewModels
                 WeakReferenceMessenger.Default.Send(new MusicStoreClosedMessage(SelectedAlbum));
             }
         }
-
+        
+        /// <summary>
+        /// Performs an asynchronous search for albums based on the provided term and updates the results.
+        /// </summary>
         private async Task DoSearch(string? term)
         {
             _cancellationTokenSource?.Cancel();
@@ -59,7 +65,10 @@ namespace Avalonia.MusicStore.ViewModels
 
             IsBusy = false;
         }
-
+        
+        /// <summary>
+        /// Asynchronously loads album cover images for each result, unless the operation is canceled.
+        /// </summary>
         private async void LoadCovers(CancellationToken cancellationToken)
         {
             foreach (var album in SearchResults.ToList())
@@ -72,7 +81,10 @@ namespace Avalonia.MusicStore.ViewModels
                 }
             }
         }
-
+        
+        /// <summary>
+        /// Triggered when the search text in music store view changes and initiates a new search operation.
+        /// </summary>
         partial void OnSearchTextChanged(string value)
         {
             DoSearch(SearchText);

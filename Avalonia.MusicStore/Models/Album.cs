@@ -25,6 +25,9 @@ namespace Avalonia.MusicStore.Models
         public string CoverUrl { get; set; }
         private string CachePath => $"./Cache/{SanitizeFileName(Artist)} - {SanitizeFileName(Title)}";
         
+        /// <summary>
+        /// Searches in iTunes api for albums matching the given search term.
+        /// </summary>
         public static async Task<IEnumerable<Album>> SearchAsync(string? searchTerm)
         {
             var query = await s_SearchManager.GetAlbumsAsync(searchTerm).ConfigureAwait(false);
@@ -33,12 +36,18 @@ namespace Avalonia.MusicStore.Models
                 new Album(x.ArtistName, x.CollectionName,
                     x.ArtworkUrl100.Replace("100x100bb", "600x600bb")));
         }
-
+        
+        /// <summary>
+        /// Loads an album from the given stream.
+        /// </summary>
         public static async Task<Album> LoadFromStream(Stream stream)
         {
             return (await JsonSerializer.DeserializeAsync<Album>(stream).ConfigureAwait(false))!;
         }
-
+        
+        /// <summary>
+        /// Loads all cached albums from /Cache directory.
+        /// </summary>
         public static async Task<IEnumerable<Album>> LoadCachedAsync()
         {
             if (!Directory.Exists("./Cache"))
@@ -59,6 +68,9 @@ namespace Avalonia.MusicStore.Models
             return results;
         }
         
+        /// <summary>
+        /// Loads the album cover bitmap from cache or api.
+        /// </summary>
         public async Task<Stream> LoadCoverBitmapAsync()
         {
             if (File.Exists(CachePath + ".bmp"))
@@ -72,6 +84,9 @@ namespace Avalonia.MusicStore.Models
             }
         }
 
+        /// <summary>
+        /// Calls SaveToStreamAsync to save album data to the local cache and creates cache folder if it didn't exist.
+        /// </summary>
         public async Task SaveAsync()
         {
             if (!Directory.Exists("./Cache"))
@@ -85,6 +100,9 @@ namespace Avalonia.MusicStore.Models
             }
         }
 
+        /// <summary>
+        /// Opens a stream for saving the album cover bitmap.
+        /// </summary>
         public Stream SaveCoverBitmapStream()
         {
             return File.OpenWrite(CachePath + ".bmp");
@@ -104,6 +122,9 @@ namespace Avalonia.MusicStore.Models
             return input;
         }
 
+        /// <summary>
+        /// Saves the album to the given stream as JSON.
+        /// </summary>
         private static async Task SaveToStreamAsync(Album data, Stream stream)
         {
             await JsonSerializer.SerializeAsync(stream, data).ConfigureAwait(false);
