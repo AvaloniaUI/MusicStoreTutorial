@@ -15,24 +15,26 @@ namespace Avalonia.MusicStore.ViewModels
     {
         private CancellationTokenSource? _cancellationTokenSource;
 
-        [ObservableProperty] public partial string? SearchText { get; set; }
-        
-        [ObservableProperty] public partial bool IsBusy { get; private set; }
-        
-        [ObservableProperty] public partial AlbumViewModel? SelectedAlbum { get; set; }
+        [ObservableProperty] 
+        public partial string? SearchText { get; set; }
+
+        [ObservableProperty] 
+        public partial bool IsBusy { get; private set; }
+
+        [ObservableProperty] 
+        public partial AlbumViewModel? SelectedAlbum { get; set; }
 
         public ObservableCollection<AlbumViewModel> SearchResults { get; } = new();
 
+        [RelayCommand]
+        private void BuyMusic()
+        {
+            if (SelectedAlbum != null)
+            {
+                WeakReferenceMessenger.Default.Send(new MusicStoreClosedMessage(SelectedAlbum));
+            }
+        }
 
-        public MusicStoreViewModel()
-        {
-     
-        }
-        partial void OnSearchTextChanged(string value)
-        {
-            DoSearch(SearchText);
-        }
-        
         private async Task DoSearch(string? term)
         {
             _cancellationTokenSource?.Cancel();
@@ -58,7 +60,6 @@ namespace Avalonia.MusicStore.ViewModels
             IsBusy = false;
         }
 
-
         private async void LoadCovers(CancellationToken cancellationToken)
         {
             foreach (var album in SearchResults.ToList())
@@ -72,13 +73,9 @@ namespace Avalonia.MusicStore.ViewModels
             }
         }
 
-        [RelayCommand]
-        private void BuyMusic()
+        partial void OnSearchTextChanged(string value)
         {
-            if (SelectedAlbum != null)
-            {
-                WeakReferenceMessenger.Default.Send(new MusicStoreClosedMessage(SelectedAlbum));
-            }
+            DoSearch(SearchText);
         }
     }
 }

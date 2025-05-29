@@ -1,10 +1,8 @@
 ﻿using iTunesSearch.Library;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -21,29 +19,44 @@ namespace Avalonia.MusicStore.Models
             Title = title;
             CoverUrl = coverUrl;
         }
+        
         public string Artist { get; set; }
         public string Title { get; set; }
         public string CoverUrl { get; set; }
         private string CachePath => $"./Cache/{SanitizeFileName(Artist)} - {SanitizeFileName(Title)}";
-
+        
         public static async Task<IEnumerable<Album>> SearchAsync(string? searchTerm)
         {
-            var query = await s_SearchManager.GetAlbumsAsync(searchTerm)
-                .ConfigureAwait(false);
+            var query = await s_SearchManager.GetAlbumsAsync(searchTerm).ConfigureAwait(false);
 
             return query.Albums.Select(x =>
                 new Album(x.ArtistName, x.CollectionName,
                     x.ArtworkUrl100.Replace("100x100bb", "600x600bb")));
         }
 
-        private static string SanitizeFileName(string input)
+        public static async Task<Album> LoadFromStream(Stream stream)
         {
-            foreach (var c in Path.GetInvalidFileNameChars())
+            return (await JsonSerializer.DeserializeAsync<Album>(stream).ConfigureAwait(false))!;
+        }
+
+        public static async Task<IEnumerable<Album>> LoadCachedAsync()
+        {
+            if (!Directory.Exists("./Cache"))
             {
-                input = input.Replace(c, '_');
+                Directory.CreateDirectory("./Cache");
             }
 
-            return input;
+            var results = new List<Album>();
+
+            foreach (var file in Directory.EnumerateFiles("./Cache"))
+            {
+                if ((new DirectoryInfo(file).Extension) != ".json") continue;
+
+                await using var fs = File.OpenRead(file);
+                results.Add(await Album.LoadFromStream(fs).ConfigureAwait(false));
+            }
+
+            return results;
         }
         
         public async Task<Stream> LoadCoverBitmapAsync()
@@ -76,35 +89,24 @@ namespace Avalonia.MusicStore.Models
         {
             return File.OpenWrite(CachePath + ".bmp");
         }
+        
+        /// <summary>
+        /// Sanitizes invalid characters from the input and returns valid characters for a file name.
+        /// Example: AC/DC -> AC_DC
+        /// </summary>
+        private static string SanitizeFileName(string input)
+        {
+            foreach (var c in Path.GetInvalidFileNameChars())
+            {
+                input = input.Replace(c, '_');
+            }
+
+            return input;
+        }
 
         private static async Task SaveToStreamAsync(Album data, Stream stream)
         {
             await JsonSerializer.SerializeAsync(stream, data).ConfigureAwait(false);
-        }
-
-        public static async Task<Album> LoadFromStream(Stream stream)
-        {
-            return (await JsonSerializer.DeserializeAsync<Album>(stream).ConfigureAwait(false))!;
-        }
-
-        public static async Task<IEnumerable<Album>> LoadCachedAsync()
-        {
-            if (!Directory.Exists("./Cache"))
-            {
-                Directory.CreateDirectory("./Cache");
-            }
-
-            var results = new List<Album>();
-
-            foreach (var file in Directory.EnumerateFiles("./Cache"))
-            {
-                if ((new DirectoryInfo(file).Extension) != ".json") continue;
-
-                await using var fs = File.OpenRead(file);
-                results.Add(await Album.LoadFromStream(fs).ConfigureAwait(false));
-            }
-
-            return results;
         }
     }
 }
