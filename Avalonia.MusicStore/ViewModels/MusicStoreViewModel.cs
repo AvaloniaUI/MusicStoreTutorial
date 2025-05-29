@@ -14,7 +14,6 @@ namespace Avalonia.MusicStore.ViewModels
     public partial class MusicStoreViewModel : ViewModelBase
     {
         private CancellationTokenSource? _cancellationTokenSource;
-        private CancellationTokenSource? _searchDebounceCts;
 
         [ObservableProperty] public partial string? SearchText { get; set; }
         
