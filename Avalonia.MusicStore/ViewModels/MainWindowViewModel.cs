@@ -16,7 +16,7 @@ namespace Avalonia.MusicStore.ViewModels
 
         public MainWindowViewModel()
         {
-            Task.Run(LoadAlbums);
+             LoadAlbums();
         }
 
         [RelayCommand]
@@ -33,17 +33,10 @@ namespace Avalonia.MusicStore.ViewModels
         private async void LoadAlbums()
         {
             var albums = (await Album.LoadCachedAsync()).Select(x => new AlbumViewModel(x)).ToList();
-
-
-            await Dispatcher.UIThread.InvokeAsync(() =>
+            foreach (var album in albums)
             {
-                Albums.Clear();
-    
-                foreach (var album in albums)
-                {
-                    Albums.Add(album);
-                }
-            });
+                Albums.Add(album);
+            }
             var coverTasks = albums.Select(album => album.LoadCover());
             await Task.WhenAll(coverTasks);
         }
