@@ -85,7 +85,7 @@ namespace Avalonia.MusicStore.ViewModels
         /// <summary>
         /// Triggered when the search text in music store view changes and initiates a new search operation.
         /// </summary>
-        partial void OnSearchTextChanged(string value)
+        partial void OnSearchTextChanged(string? value)
         {
             _ = DoSearch(SearchText);
         }

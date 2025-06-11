@@ -30,6 +30,11 @@ namespace Avalonia.MusicStore.Models
         /// </summary>
         public static async Task<IEnumerable<Album>> SearchAsync(string? searchTerm)
         {
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+                return Enumerable.Empty<Album>();
+            }
+            
             var query = await s_SearchManager.GetAlbumsAsync(searchTerm).ConfigureAwait(false);
 
             return query.Albums.Select(x =>
