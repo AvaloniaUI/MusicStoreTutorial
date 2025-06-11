@@ -1,31 +1,28 @@
 using Avalonia.Controls;
+using Avalonia.MusicStore.Messages;
 using Avalonia.MusicStore.ViewModels;
-using Avalonia.ReactiveUI;
-using ReactiveUI;
-using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace Avalonia.MusicStore.Views
 {
-    public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
+    public partial class MainWindow : Window
     {
         public MainWindow()
         {
             InitializeComponent();
-            
-            if (Design.IsDesignMode) return;
-            
-            this.WhenActivated(action =>
-                action(ViewModel!.ShowDialog.RegisterHandler(DoShowDialogAsync)));
-        }
 
-        private async Task DoShowDialogAsync(IInteractionContext<MusicStoreViewModel,
-                                                AlbumViewModel?> interaction)
-        {
-            var dialog = new MusicStoreWindow();
-            dialog.DataContext = interaction.Input;
+            if (Design.IsDesignMode)
+                return;
 
-            var result = await dialog.ShowDialog<AlbumViewModel?>(this);
-            interaction.SetOutput(result);
+            WeakReferenceMessenger.Default.Register<MainWindow, PurchaseAlbumMessage>(this, static (w, m) =>
+            {
+                var dialog = new MusicStoreWindow
+                {
+                    DataContext = new MusicStoreViewModel()
+                };
+
+                m.Reply(dialog.ShowDialog<AlbumViewModel?>(w));
+            });
         }
     }
 }

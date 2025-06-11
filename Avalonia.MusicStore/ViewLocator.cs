@@ -1,7 +1,7 @@
+using System;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Avalonia.MusicStore.ViewModels;
-using System;
 
 namespace Avalonia.MusicStore
 {

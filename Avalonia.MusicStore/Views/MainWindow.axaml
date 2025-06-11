@@ -18,32 +18,35 @@
     <ExperimentalAcrylicBorder IsHitTestVisible="False">
       <ExperimentalAcrylicBorder.Material>
         <ExperimentalAcrylicMaterial
-            BackgroundSource="Digger"
-            TintColor="Black"
-            TintOpacity="1"
-            MaterialOpacity="0.65" />
+          BackgroundSource="Digger"
+          TintColor="Black"
+          TintOpacity="1"
+          MaterialOpacity="0.65" />
       </ExperimentalAcrylicBorder.Material>
     </ExperimentalAcrylicBorder>
     <Panel Margin="40">
       <Button HorizontalAlignment="Right" VerticalAlignment="Top"
-        Command="{Binding BuyMusicCommand}">
-            <PathIcon Data="{StaticResource store_microsoft_regular}" />
+              Command="{Binding AddAlbumCommand}">
+        <PathIcon Data="{StaticResource store_microsoft_regular}" />
       </Button>
-    
-    <ItemsControl Margin="0 40 0 0" ItemsSource="{Binding Albums}">
-      <ItemsControl.ItemsPanel>
-        <ItemsPanelTemplate>
-          <WrapPanel />
-        </ItemsPanelTemplate>
-      </ItemsControl.ItemsPanel>
 
-      <ItemsControl.ItemTemplate>
-        <DataTemplate>
-          <views:AlbumView Margin="0 0 20 20" />
-        </DataTemplate>
-      </ItemsControl.ItemTemplate>
-    </ItemsControl>
+      <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0 40 0 0">
+        <ItemsControl ItemsSource="{Binding Albums}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <WrapPanel />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <views:AlbumView Margin="0 0 20 20" />
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
+
+    </Panel>
   </Panel>
-  </Panel>
-  
+
 </Window>

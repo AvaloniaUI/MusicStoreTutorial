@@ -1,11 +1,11 @@
-﻿using Avalonia.Media.Imaging;
+﻿using System.Threading.Tasks;
+using Avalonia.Media.Imaging;
 using Avalonia.MusicStore.Models;
-using ReactiveUI;
-using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Avalonia.MusicStore.ViewModels
 {
-    public class AlbumViewModel : ViewModelBase
+    public partial class AlbumViewModel : ViewModelBase
     {
         private readonly Album _album;
 
@@ -18,14 +18,11 @@ namespace Avalonia.MusicStore.ViewModels
 
         public string Title => _album.Title;
 
-        private Bitmap? _cover;
+        [ObservableProperty] public partial Bitmap? Cover { get; private set; }
 
-        public Bitmap? Cover
-        {
-            get => _cover;
-            private set => this.RaiseAndSetIfChanged(ref _cover, value);
-        }
-
+        /// <summary>
+        /// Asynchronously loads and decodes the album cover image, then assigns it to <see cref="Cover"/>.
+        /// </summary>
         public async Task LoadCover()
         {
             await using (var imageStream = await _album.LoadCoverBitmapAsync())
@@ -34,6 +31,9 @@ namespace Avalonia.MusicStore.ViewModels
             }
         }
 
+        /// <summary>
+        /// Saves the album and its cover to cache.
+        /// </summary>        
         public async Task SaveToDiskAsync()
         {
             await _album.SaveAsync();

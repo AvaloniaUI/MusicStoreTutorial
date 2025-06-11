@@ -1,57 +1,47 @@
-﻿using Avalonia.MusicStore.Models;
-using ReactiveUI;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive;
-using System.Reactive.Linq;
 using System.Threading;
+using System.Threading.Tasks;
+using Avalonia.MusicStore.Messages;
+using Avalonia.MusicStore.Models;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace Avalonia.MusicStore.ViewModels
 {
-    public class MusicStoreViewModel : ViewModelBase
+    public partial class MusicStoreViewModel : ViewModelBase
     {
         private CancellationTokenSource? _cancellationTokenSource;
 
-        public MusicStoreViewModel()
-        {
-            BuyMusicCommand = ReactiveCommand.Create(() =>
-            {
-                return SelectedAlbum;
-            });
+        [ObservableProperty]
+        public partial string? SearchText { get; set; }
 
-            this.WhenAnyValue(x => x.SearchText)
-                .Throttle(TimeSpan.FromMilliseconds(400))
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(DoSearch!);
-        }
+        [ObservableProperty]
+        public partial bool IsBusy { get; private set; }
 
-        private string? _searchText;
-        private bool _isBusy;
-
-        public string? SearchText
-        {
-            get => _searchText;
-            set => this.RaiseAndSetIfChanged(ref _searchText, value);
-        }
-
-        public bool IsBusy
-        {
-            get => _isBusy;
-            set => this.RaiseAndSetIfChanged(ref _isBusy, value);
-        }
-
-        private AlbumViewModel? _selectedAlbum;
+        [ObservableProperty]
+        public partial AlbumViewModel? SelectedAlbum { get; set; }
 
         public ObservableCollection<AlbumViewModel> SearchResults { get; } = new();
 
-        public AlbumViewModel? SelectedAlbum
+        /// <summary>
+        /// This relay command sends a message indicating that the selected album has been purchased, which will notify music store view to close.
+        /// </summary>
+        [RelayCommand]
+        private void BuyMusic()
         {
-            get => _selectedAlbum;
-            set => this.RaiseAndSetIfChanged(ref _selectedAlbum, value);
+            if (SelectedAlbum != null)
+            {
+                WeakReferenceMessenger.Default.Send(new MusicStoreClosedMessage(SelectedAlbum));
+            }
         }
 
-        private async void DoSearch(string s)
+        /// <summary>
+        /// Performs an asynchronous search for albums based on the provided term and updates the results.
+        /// </summary>
+        private async Task DoSearch(string? term)
         {
             _cancellationTokenSource?.Cancel();
             _cancellationTokenSource = new CancellationTokenSource();
@@ -60,25 +50,25 @@ namespace Avalonia.MusicStore.ViewModels
             IsBusy = true;
             SearchResults.Clear();
 
-            if (!string.IsNullOrWhiteSpace(s))
+            var albums = await Album.SearchAsync(term);
+
+            foreach (var album in albums)
             {
-                var albums = await Album.SearchAsync(s);
+                var vm = new AlbumViewModel(album);
+                SearchResults.Add(vm);
+            }
 
-                foreach (var album in albums)
-                {
-                    var vm = new AlbumViewModel(album);
-                    SearchResults.Add(vm);
-                }
-
-                if (!cancellationToken.IsCancellationRequested)
-                {
-                    LoadCovers(cancellationToken);
-                }
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                LoadCovers(cancellationToken);
             }
 
             IsBusy = false;
         }
 
+        /// <summary>
+        /// Asynchronously loads album cover images for each result, unless the operation is canceled.
+        /// </summary>
         private async void LoadCovers(CancellationToken cancellationToken)
         {
             foreach (var album in SearchResults.ToList())
@@ -92,7 +82,12 @@ namespace Avalonia.MusicStore.ViewModels
             }
         }
 
-        public ReactiveCommand<Unit, AlbumViewModel?> BuyMusicCommand { get; }
-
+        /// <summary>
+        /// Triggered when the search text in music store view changes and initiates a new search operation.
+        /// </summary>
+        partial void OnSearchTextChanged(string? value)
+        {
+            _ = DoSearch(SearchText);
+        }
     }
 }

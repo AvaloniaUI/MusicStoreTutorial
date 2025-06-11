@@ -1,16 +1,17 @@
-using Avalonia.MusicStore.ViewModels;
-using Avalonia.ReactiveUI;
-using ReactiveUI;
-using System;
+using Avalonia.Controls;
+using Avalonia.MusicStore.Messages;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace Avalonia.MusicStore.Views
 {
-    public partial class MusicStoreWindow : ReactiveWindow<MusicStoreViewModel>
+    public partial class MusicStoreWindow : Window
     {
         public MusicStoreWindow()
         {
             InitializeComponent();
-            this.WhenActivated(action => action(ViewModel!.BuyMusicCommand.Subscribe(Close)));
+
+            WeakReferenceMessenger.Default.Register<MusicStoreWindow, MusicStoreClosedMessage>(this,
+                static (w, m) => w.Close(m.SelectedAlbum));
         }
     }
 }

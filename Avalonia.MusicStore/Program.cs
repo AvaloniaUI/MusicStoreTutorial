@@ -1,6 +1,5 @@
-﻿using Avalonia;
-using Avalonia.ReactiveUI;
-using System;
+﻿using System;
+using Avalonia;
 
 namespace Avalonia.MusicStore
 {
@@ -17,7 +16,6 @@ namespace Avalonia.MusicStore
         public static AppBuilder BuildAvaloniaApp()
             => AppBuilder.Configure<App>()
                 .UsePlatformDetect()
-                .LogToTrace()
-                .UseReactiveUI();
+                .LogToTrace();
     }
 }
